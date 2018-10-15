@@ -73,6 +73,8 @@
           ></InlineEditText>
         </td>
         <td class='justify-center layout px-0'>
+          <v-icon small @click='editItem(item)'>edit</v-icon>
+          &nbsp;
           <v-icon small @click='deleteItem(item)'>delete</v-icon>
         </td>
       </template>
@@ -112,6 +114,7 @@ export default class EventTable extends Vue {
   public snack = false;
   public dialog = false;
 
+  public editedIdx: number = -1;
   public editedEvent: IEvent | null = null;
   public get defaultEvent(): IEvent {
     return {
@@ -153,6 +156,12 @@ export default class EventTable extends Vue {
     this.snack = true;
   }
 
+  public editItem(ev: Event): void {
+    this.editedIdx = this.events.indexOf(ev);
+    this.editedEvent = Object.assign({}, ev);
+    this.open();
+  }
+
   public error(msg: string): void {
     this.snackText = `${msg}, Changes not saved`;
     this.snackColor = 'error';
@@ -162,6 +171,7 @@ export default class EventTable extends Vue {
   public close(): void {
     this.dialog = false;
     this.editedEvent = this.defaultEvent;
+    this.editedIdx = -1;
   }
 
   public open(): void {
@@ -174,12 +184,21 @@ export default class EventTable extends Vue {
       return;
     }
 
-    const ev = new Event(this.editedEvent);
-    ev.save();
-    this.$emit('new-event', ev);
-    this.snackText = 'New Event Added';
-    this.snackColor = 'success';
-    this.snack = true;
+    if (this.editedIdx === -1) {
+      const ev = new Event(this.editedEvent);
+      ev.save();
+      this.$emit('new-event', ev);
+      this.snackText = 'New Event Added';
+      this.snackColor = 'success';
+      this.snack = true;
+    } else {
+      const ev = this.events[this.editedIdx];
+      Object.assign(ev, this.editedEvent);
+      ev.save();
+      this.snackText = 'Saved Item';
+      this.snackColor = 'success';
+      this.snack = true;
+    }
     this.close();
   }
 }
