@@ -2,7 +2,7 @@ import Vue, { VNode, Component } from 'vue';
 import App from './App.vue';
 import Admin from './Admin.vue';
 import './plugins/vuetify';
-
+import '@mdi/font/css/materialdesignicons.css';
 import moment from 'moment';
 import VueMoment from 'vue-moment';
 

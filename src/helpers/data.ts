@@ -7,7 +7,7 @@ export interface IDataHeader {
   text: string;
   align?: string;
   sortable?: boolean;
-  value: string;
+  value?: string;
 }
 
 export const EventHeaders: IDataHeader[] = [
@@ -38,9 +38,18 @@ export const EventHeaders: IDataHeader[] = [
     sortable: true,
   },
   {
+    text: 'Duration',
+    sortable: false,
+  },
+  {
     text: 'Room',
     value: 'room',
     sortable: true,
+  },
+  {
+    text: 'Icon',
+    value: 'icon',
+    sortable: false,
   },
   {
     text: '',

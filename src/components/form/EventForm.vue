@@ -36,6 +36,14 @@
             </v-flex>
           </v-layout>
           <v-layout>
+            <v-flex xs6>
+              <v-text-field label='icon' v-model='value.icon'></v-text-field>
+            </v-flex>
+            <v-flex xs4 offset-xs1>
+              <v-icon large v-if='value.icon'>{{ value.icon }}</v-icon>
+            </v-flex>
+          </v-layout>
+          <v-layout>
             <v-flex xs12 sm6 md6>
               <TimeInput label='Start Time'
                 v-model='value.startTime'

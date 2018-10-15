@@ -24,6 +24,10 @@
 
               <v-card-text>
                 <p class='font-weight-medium'>{{ ev.ev.startTime }} - {{ ev.ev.endTime }}</p>
+                <p class='font-italic'>Duration:
+                  <span v-if='ev.ev.duration().hours() > 0'>{{ ev.ev.duration().hours() }}h</span>
+                  {{ ev.ev.duration().minutes() }}m
+                </p>
                 <p class='font-weight-medium font-italic'>Room: {{ ev.ev.room }}</p>
                 <p v-if='ev.ev.desc' class='font-weight-medium'>{{ ev.ev.desc }}</p>
               </v-card-text>

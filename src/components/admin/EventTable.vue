@@ -17,6 +17,7 @@
       :items='events'
       class='elevation-5'
       :loading='events.length === 0'
+      :rows-per-page-items='[20,35,{"text": "$vuetify.dataIterator.rowsPerPageAll", "value": -1}]'
     >
       <template slot='footer'>
         <td colspan='100%' align='right'>
@@ -66,11 +67,18 @@
             @save='item.validate() ? saveItem(item) : (item.endTime = item._endTime) && error("Must not end before it begins")'
           ></InlineEditTime>
         </td>
+        <td>
+          <span v-if='item.duration().hours() > 0'>{{ item.duration().hours() }}h</span>
+          {{ item.duration().minutes() }}m
+        </td>
         <td class='text-xs-left'>
           <InlineEditText v-model='item.room'
             @save='saveItem(item)'
             @error='error(`Invalid Room, Must not be ${$event}`)'
           ></InlineEditText>
+        </td>
+        <td>
+          <v-icon v-if='item.icon'>{{item.icon}}</v-icon>
         </td>
         <td class='justify-center layout px-0'>
           <v-icon small @click='editItem(item)'>edit</v-icon>

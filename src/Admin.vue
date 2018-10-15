@@ -19,7 +19,7 @@
             <v-list-tile @click='schedule = index' :value='schedule === index'>
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
               <v-list-tile-action>
-                <v-icon>event_note</v-icon>
+                <v-icon>mdi-calendar-edit</v-icon>
               </v-list-tile-action>
             </v-list-tile>
           </template>
@@ -34,7 +34,15 @@
           </v-flex>
           <v-flex offset-xs1 xs5>
             <v-card>
-              <v-card-title>Foobar {{select}}</v-card-title>
+              <v-card-title>Icon Links</v-card-title>
+              <v-card-text>
+                <p>
+                  Visit one of the links below to see icons. Use the name in the icon field to use it.
+                  For instance, on the Material Icons list (the second link) you can find the icon named
+                  'rowing'. If you put `rowing` in the icon text field, you'll get <v-icon>rowing</v-icon></p>
+                <p><a href='https://cdn.materialdesignicons.com/2.8.94/'>Material Design Icons</a></p>
+                <p><a href='https://material.io/tools/icons/'>Material Icons</a></p>
+              </v-card-text>
             </v-card>
           </v-flex>
         </v-layout>
