@@ -34,12 +34,16 @@ export default class Event {
   }
 
   public start(): moment.Moment {
-    return moment(`${this.day} ${this.startTime}`, 'YYYY-MM-DD h:mm A');
+    const ret = moment(`${this.day} ${this.startTime}`, 'YYYY-MM-DD h:mm A');
+    if (ret.hours() <= 3) {
+      ret.add(1, 'day');
+    }
+    return ret;
   }
 
   public end(): moment.Moment {
     const ret = moment(`${this.day} ${this.endTime}`, 'YYYY-MM-DD h:mm A');
-    if (moment(this.startTime, 'h:mm A').hours() > 3 && ret.hours() <= 3) {
+    if (ret.hours() <= 3) {
       ret.add(1, 'day');
     }
     return ret;

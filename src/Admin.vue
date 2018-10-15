@@ -3,7 +3,7 @@
     <v-toolbar dark app clipped-left dense>
       <v-toolbar-title>
         Admin Panel
-        {{ (select) ? `> ${curSchedule.title}` : '' }}
+        {{ (select !== null) ? `> ${curSchedule.title}` : '' }}
       </v-toolbar-title>
     </v-toolbar>
     <v-navigation-drawer dark app clipped permanent width='250'>

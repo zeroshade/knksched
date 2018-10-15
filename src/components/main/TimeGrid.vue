@@ -39,7 +39,7 @@ export default class TimeGrid extends Vue {
   content: '';
   width: calc(100% - 85px);
   height: 1px;
-  background: green;
+  background: black;
   margin-left: 51px;
   position: absolute;
 

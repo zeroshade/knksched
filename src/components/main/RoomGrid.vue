@@ -35,7 +35,7 @@ import { groupBy, mapValues, toPairs, keys } from 'lodash';
   },
 })
 export default class RoomGrid extends BaseGrid {
-  public roomidx: number = 1;
+  public roomidx: number = 0;
 
   public get eventsByRoom(): EventCol[][] {
     return this.dateRange.map((day): EventCol[] => {

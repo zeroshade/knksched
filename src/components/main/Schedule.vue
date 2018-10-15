@@ -1,13 +1,13 @@
 <template>
   <v-layout row justify-start align-baseline class='events'>
-    <template v-if='$vuetify.breakpoint.smAndUp'>
+    <template v-if='$vuetify.breakpoint.mdAndUp'>
       <v-flex v-for='col in eventcols'
         :style="{ height: height + 'px'}"
         d-block class='event-group mb-0'
-        v-bind='{ [`xs${12/eventcols.length}`]: true }'
+        v-bind='{ [`xs${Math.floor(12/eventcols.length)}`]: true }'
         :key='col.key()'
       >
-        <v-card flat tile class='top-info'>
+        <v-card flat tile class='top-info' color='deep-orange darken-3'>
           <v-card-title>
             <span class='text-xs-center' style='width: 100%; padding: 0 .5em'>
               <slot v-bind:col='col'></slot>
@@ -16,9 +16,9 @@
         </v-card>
 
         <div class='eventcol ml-1 mr-1'>
-          <template v-for='ev in col.events'>
+          <template v-if='col' v-for='ev in col.events'>
             <EventBlock :pixelHeight='pixelHeight'
-              :colorMap='colorMap' :events='ev' :date='col.day'>
+              :colorMap='colorMap' :events='ev' :date='col ? col.day : new Date()'>
             </EventBlock>
           </template>
         </div>
@@ -31,10 +31,10 @@
         xs12
       >
         <v-menu offset-y class='top-info'>
-          <v-card flat tile slot='activator'>
+          <v-card flat tile slot='activator' :height='pixelHeight - 1 + "px"'>
             <v-card-title>
               <span class='text-xs-center' style='width: 100%; padding: 0 .5em'>
-                <slot v-bind:col='eventcols[showcol].events'></slot> <v-icon dark>expand_more</v-icon>
+                <slot v-bind:col='curcol'></slot> <v-icon dark>expand_more</v-icon>
               </span>
             </v-card-title>
           </v-card>
@@ -49,9 +49,9 @@
         </v-menu>
 
         <div class='eventcol ml-1 mr-1'>
-          <template v-for='ev in eventcols[showcol].events'>
+          <template v-for='ev in curcol.events'>
             <EventBlock :pixelHeight='pixelHeight' :colorMap='colorMap'
-              :events='ev' :date='eventcols[showcol].day'>
+              :events='ev' :date='curcol.day'>
             </EventBlock>
           </template>
         </div>
@@ -77,6 +77,13 @@ export default class Schedule extends Vue {
   @Prop(Object) public colorMap!: {[index: string]: string};
 
   public showcol: number = 0;
+
+  public get curcol(): EventCol {
+    if (this.eventcols && this.eventcols.length > this.showcol) {
+      return this.eventcols[this.showcol];
+    }
+    return {events: [], day: new Date(), key: () => ''};
+  }
 }
 </script>
 
@@ -90,8 +97,8 @@ export default class Schedule extends Vue {
 }
 
 .top-info {
-  height: 50px;
-  border-bottom: 1px solid purple;
+  height: 49px;
+  border-bottom: 1px solid black;
   padding: 0px;
   width: 100%;
 
@@ -109,10 +116,11 @@ export default class Schedule extends Vue {
 
 .event-group {
   background: none;
-  border: 1px solid purple;
+  border: 1px solid black;
 
   div.eventcol {
     padding: 0px;
+    padding-top: 2px;
     position: relative;
     height: 100%;
   }

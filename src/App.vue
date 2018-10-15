@@ -27,11 +27,11 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar dense tabs color='cyan' app>
+    <v-toolbar dense tabs color='orange' app>
       <v-toolbar-side-icon @click.stop='drawer = !drawer'></v-toolbar-side-icon>
       <v-toolbar-title>Kith &amp; Kink Schedule</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-tabs slot='extension' centered grow color='cyan' slider-color='yellow' v-model='tab'>
+      <v-tabs slot='extension' centered grow color='orange' slider-color='yellow' v-model='tab'>
         <v-tab ripple>Agenda</v-tab>
         <v-tab ripple>Room View</v-tab>
         <v-tab ripple>Event View</v-tab>
@@ -92,6 +92,7 @@ export default class App extends Vue {
   public set schedule(idx: number) {
     this.items[idx].loadEvents().then(() => {
       this.select = idx;
+      this.drawer = false;
     });
   }
 
@@ -102,5 +103,10 @@ export default class App extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="styl">
+@import '~vuetify/src/stylus/theme.styl'
+
+$material-dark.background = #EF6100
+
+@import '~vuetify/src/stylus/main.styl'
 </style>

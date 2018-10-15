@@ -23,16 +23,26 @@ export default class Schedule {
   public numHours: number = 14;
   public start = '';
   public events: Event[] = [];
+  public defColor = '';
   public colorMap: {[index: string]: string} = {};
 
   constructor(ev: ISchedule) {
-    assign(this, pick(ev, ['title', 'id', 'numHours', 'start']));
+    assign(this, pick(ev, ['title', 'id', 'numHours', 'start', 'defColor']));
     this.dayStart = new Date(`${ev.dayStart} ${ev.start}`);
     this.dayEnd = new Date(`${ev.dayEnd} ${ev.start}`);
     if (ev.colorMap) {
       this.colorMap = ev.colorMap;
     }
-    this.colorMap.other = ev.defColor;
+    this.colorMap.other = this.defColor;
+  }
+
+  public async save(): Promise<void> {
+    this.defColor = this.colorMap.other;
+    try {
+      await axios.put(`${url}`, this);
+    } catch (e) {
+      handleErr(e);
+    }
   }
 
   public async loadEvents(): Promise<void> {

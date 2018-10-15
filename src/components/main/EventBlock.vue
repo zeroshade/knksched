@@ -2,7 +2,7 @@
   <v-layout row justify-center class='full evlayout'>
     <template v-for='(col, idx) in eventColumns'>
       <v-flex :class="`evcol ${(idx > 0) ? 'ml-1' : ''} ${(idx < eventColumns.length - 1) ? 'mr-1' : ''}`"
-        v-bind="{[`xs${12/eventColumns.length}`]: true}" d-block
+        v-bind="{[`xs${Math.floor(12/eventColumns.length)}`]: true}" d-block
         v-bind:style="{
            top: (2 * pixelHeight * col[0].start().diff(date, 'hours', true) - 1) + 'px',
            marginTop: 0,
@@ -12,23 +12,41 @@
             height: (ev.ev.duration().asMinutes()/30 * pixelHeight - 1) + 'px',
             marginTop: ev.margin + 'px',
           }">
-          <v-btn class='entry full-height' dark :color='colorMap[ev.ev.room] || colorMap["other"]'
+          <v-btn class='entry full-height pl-0 pr-0' dark :color='colorMap[ev.ev.room] || colorMap["other"]'
             @click.stop='ev.ev.viewing = true' block>
-            <span><v-icon v-if='ev.ev.icon' dark>{{ev.ev.icon}}</v-icon> {{ ev.ev.title }}</span>
+            <span v-bind:style="{
+                height: (ev.ev.duration().asMinutes()/30 * pixelHeight - 12) + 'px',
+              }">
+              <v-icon small v-if='ev.ev.icon' dark>{{ev.ev.icon}}</v-icon>
+              {{ ev.ev.title }}
+            </span>
           </v-btn>
           <v-dialog v-model="ev.ev.viewing" width="500">
             <v-card>
-              <v-card-title :class='colorMap[ev.ev.room] || colorMap["other"] + " headline"' primary-title>
-                <v-icon v-if='ev.ev.icon' dark>{{ ev.ev.icon}}</v-icon> {{ ev.ev.title }}
+              <v-card-title :class='`${colorMap[ev.ev.room] || colorMap["other"]} headline`' primary-title>
+                {{ ev.ev.title }} <v-icon v-if='ev.ev.icon' dark>{{ ev.ev.icon}}</v-icon>
               </v-card-title>
 
               <v-card-text>
-                <p class='font-weight-medium'>{{ ev.ev.startTime }} - {{ ev.ev.endTime }}</p>
-                <p class='font-italic'>Duration:
-                  <span v-if='ev.ev.duration().hours() > 0'>{{ ev.ev.duration().hours() }}h</span>
-                  {{ ev.ev.duration().minutes() }}m
-                </p>
-                <p class='font-weight-medium font-italic'>Room: {{ ev.ev.room }}</p>
+                <v-layout fluid>
+                  <v-flex xs6>
+                    <p class='font-weight-bold'>{{ ev.ev.startTime }} - {{ ev.ev.endTime }}</p>
+                  </v-flex>
+                  <v-flex xs6>
+                    <p class='font-italic text-xs-right'><strong>Duration:</strong>&nbsp;
+                      <span v-if='ev.ev.duration().hours()'>{{ ev.ev.duration().hours() }}h</span>
+                      <span v-if='ev.ev.duration().minutes()'>{{ ev.ev.duration().minutes() }}m</span>
+                    </p>
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex xs6>
+                    <p class='font-weight-medium font-italic'><strong>Room:</strong> {{ ev.ev.room }}</p>
+                  </v-flex>
+                  <v-flex xs6>
+                    <p class='font-weight-medium font-italic text-xs-right'><strong>Organizer:</strong> {{ ev.ev.organizer }}</p>
+                  </v-flex>
+                </v-layout>
                 <p v-if='ev.ev.desc' class='font-weight-medium'>{{ ev.ev.desc }}</p>
               </v-card-text>
             </v-card>
@@ -85,7 +103,7 @@ export default class EventBlock extends Vue {
       }
       const lastEvent = res[res.length - 1].ev;
       const prevEnd = lastEvent.start().add(lastEvent.duration());
-      res.push({ev, margin: this.pixelHeight * (ev.start().diff(prevEnd, 'minutes') / 30)});
+      res.push({ev, margin: this.pixelHeight * (ev.start().diff(prevEnd, 'minutes') / 30) + 1});
     }
     return res;
   }
@@ -116,6 +134,9 @@ export default class EventBlock extends Vue {
 
   span {
     white-space: pre-line;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
   }
 }
 </style>
