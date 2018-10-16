@@ -9,8 +9,9 @@
       </v-layout>
     </v-container>
     <v-container :style='gridStyle'>
-      <TimeGrid :times='times' :pixelHeight='pixelHeight' />
-      <Schedule :pixelHeight='pixelHeight' :eventcols='eventsByRoom[roomidx]' :height='height' :colorMap='colorMap'>
+      <TimeGrid :times='filteredTimes' :pixelHeight='pixelHeight' />
+      <Schedule :pixelHeight='pixelHeight' :eventcols='eventsByRoom[roomidx]'
+        :height='pixelHeight * (filteredTimes.length + 1) + 1' :colorMap='colorMap'>
         <template slot-scope='{ col }'>
           {{ col.key() }}
         </template>
@@ -37,12 +38,23 @@ import { groupBy, mapValues, toPairs, keys } from 'lodash';
 export default class RoomGrid extends BaseGrid {
   public roomidx: number = 0;
 
+  public get filteredTimes(): string[] {
+    const col = this.eventsByRoom[this.roomidx];
+    if (!col) { return this.times; }
+    return this.times.slice((moment(col[0].day).hours() - 12) * 2);
+  }
+
   public get eventsByRoom(): EventCol[][] {
     return this.dateRange.map((day): EventCol[] => {
       const end = moment(day).add(this.schedule.numHours, 'hours');
       const byRoom: {[index: string]: Event[][]} = mapValues(groupBy(this.schedule.events.filter(
         (ev: Event) => ev.start().isBetween(day, end, undefined, '[]')),
         (e: Event) => (keys(this.colorMap).indexOf(e.room) !== -1) ? e.room : 'other'), this.eventsInOrder);
+
+      const first = toPairs(byRoom).map((e) => e[1][0][0].start())
+        .sort((a, b) => a.isBefore(b) ? -1 : b.isBefore(a) ? 1 : 0)[0];
+
+      day.setHours(first.hours());
 
       return toPairs(byRoom).map(
         (e) => ({day, events: e[1], key: () => e[0]}),

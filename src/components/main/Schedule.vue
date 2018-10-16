@@ -4,7 +4,7 @@
       <v-flex v-for='col in eventcols'
         :style="{ height: height + 'px'}"
         d-block class='event-group mb-0'
-        v-bind='{ [`xs${Math.floor(12/eventcols.length)}`]: true }'
+        v-bind='{ [`xs${12/eventcols.length}`]: true }'
         :key='col.key()'
       >
         <v-card flat tile class='top-info' color='deep-orange darken-3'>
@@ -93,7 +93,7 @@ export default class Schedule extends Vue {
   margin-left: 50px;
   position: relative;
   z-index: 1;
-  height: 1450px;
+  // height: 1450px;
 }
 
 .top-info {

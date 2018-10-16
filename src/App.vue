@@ -74,7 +74,7 @@ export default class App extends Vue {
   public items: Schedule[] = [];
   public select: number | null = null;
   public drawer = false;
-  public tab: number = 0;
+  public tab: number = 1;
   public fixed = false;
 
   public created() {

@@ -14,6 +14,7 @@ export interface IEvent {
   schedId: number;
   desc?: string;
   organizer: string;
+  hideAgenda?: boolean;
 }
 
 export default class Event {
@@ -28,6 +29,7 @@ export default class Event {
   public organizer = '';
   public desc = '';
   public viewing = false;
+  public hideAgenda = false;
 
   constructor(ev: IEvent) {
     assign(this, ev);

@@ -22,34 +22,7 @@
             </span>
           </v-btn>
           <v-dialog v-model="ev.ev.viewing" width="500">
-            <v-card>
-              <v-card-title :class='`${colorMap[ev.ev.room] || colorMap["other"]} headline`' primary-title>
-                {{ ev.ev.title }} <v-icon v-if='ev.ev.icon' dark>{{ ev.ev.icon}}</v-icon>
-              </v-card-title>
-
-              <v-card-text>
-                <v-layout fluid>
-                  <v-flex xs6>
-                    <p class='font-weight-bold'>{{ ev.ev.startTime }} - {{ ev.ev.endTime }}</p>
-                  </v-flex>
-                  <v-flex xs6>
-                    <p class='font-italic text-xs-right'><strong>Duration:</strong>&nbsp;
-                      <span v-if='ev.ev.duration().hours()'>{{ ev.ev.duration().hours() }}h</span>
-                      <span v-if='ev.ev.duration().minutes()'>{{ ev.ev.duration().minutes() }}m</span>
-                    </p>
-                  </v-flex>
-                </v-layout>
-                <v-layout>
-                  <v-flex xs6>
-                    <p class='font-weight-medium font-italic'><strong>Room:</strong> {{ ev.ev.room }}</p>
-                  </v-flex>
-                  <v-flex xs6>
-                    <p class='font-weight-medium font-italic text-xs-right'><strong>Organizer:</strong> {{ ev.ev.organizer }}</p>
-                  </v-flex>
-                </v-layout>
-                <p v-if='ev.ev.desc' class='font-weight-medium'>{{ ev.ev.desc }}</p>
-              </v-card-text>
-            </v-card>
+            <EventCard :color='colorMap[ev.ev.room] || colorMap.other' :ev='ev.ev'></EventCard>
           </v-dialog>
         </div>
       </v-flex>
@@ -60,8 +33,13 @@
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Event from '../../helpers/event';
+import EventCard from './EventCard.vue';
 
-@Component
+@Component({
+  components: {
+    EventCard,
+  },
+})
 export default class EventBlock extends Vue {
   @Prop({type: Number, default: 50}) public pixelHeight!: number;
   @Prop(Array) public events!: Event[];

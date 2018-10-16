@@ -33,7 +33,7 @@ export default class AgendaGrid extends BaseGrid {
       return {
         day,
         events: this.eventsInOrder(this.schedule.events.filter((ev: Event) =>
-          ev.start().isBetween(day, end, undefined, '[]'))),
+          ev.start().isBetween(day, end, undefined, '[]') && !ev.hideAgenda )),
         key: () => day.toString(),
       };
     });

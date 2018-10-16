@@ -37,6 +37,14 @@
           </v-layout>
           <v-layout>
             <v-flex xs6>
+              <v-checkbox
+                v-model='value.hideAgenda'
+                label='Hide in Agenda View?'>
+              </v-checkbox>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <v-flex xs6>
               <v-text-field label='icon' v-model='value.icon'></v-text-field>
             </v-flex>
             <v-flex xs4 offset-xs1>
