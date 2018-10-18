@@ -26,6 +26,14 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-divider></v-divider>
+      <v-list class='pa-1'>
+        <v-list-tile tag='div'>
+          <v-list-tile-content>
+            <v-list-tile-title class='caption'><a href='/privacy'>Privacy Policy</a></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
     </v-navigation-drawer>
     <v-toolbar dense tabs color='orange' app>
       <v-toolbar-side-icon @click.stop='drawer = !drawer'></v-toolbar-side-icon>

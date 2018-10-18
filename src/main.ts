@@ -7,6 +7,7 @@ import AuthPlugin from './plugins/auth';
 import App from './App.vue';
 import Admin from './Admin.vue';
 import Callback from './components/main/Callback.vue';
+import Privacy from './PrivacyPolicy.vue';
 
 Vue.use(VueMoment, { moment });
 Vue.use(AuthPlugin);
@@ -17,6 +18,7 @@ const routes: {[index: string]: Component} = {
   '/': App,
   '/admin': Admin,
   '/callback': Callback,
+  '/privacy': Privacy,
 };
 
 const MyVue = Vue.extend({

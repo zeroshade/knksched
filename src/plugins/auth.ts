@@ -3,8 +3,8 @@ import _Vue from 'vue';
 
 
 const auth0 = new WebAuth({
-  domain: 'knk.auth0.com',
-  clientID: 'dUEhXbg2I06rtQhgdr0CMCzLcxOQp5qE',
+  domain: process.env.VUE_APP_AUTH0_DOMAIN,
+  clientID: process.env.VUE_APP_AUTH0_CLIENT_ID,
   redirectUri: `http://${location.host}${process.env.BASE_URL}/callback`,
   responseType: 'token id_token',
   scope: 'openid name email picture',
