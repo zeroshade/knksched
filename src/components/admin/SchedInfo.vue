@@ -53,7 +53,7 @@
 
 <script lang='ts'>
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Schedule from '../../helpers/schedule';
+import Schedule from '@/helpers/schedule';
 import { pick, uniq, keys } from 'lodash';
 import colors from 'vuetify/es5/util/colors';
 

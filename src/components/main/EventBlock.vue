@@ -32,7 +32,7 @@
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import Event from '../../helpers/event';
+import Event from '@/helpers/event';
 import EventCard from './EventCard.vue';
 
 @Component({

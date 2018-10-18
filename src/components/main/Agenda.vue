@@ -12,10 +12,10 @@
 
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator';
-import BaseGrid from '../../mixins/base-grid';
+import BaseGrid from '@/mixins/base-grid';
 import TimeGrid from './TimeGrid.vue';
 import Schedule from './Schedule.vue';
-import Event, { EventCol } from '../../helpers/event';
+import Event, { EventCol } from '@/helpers/event';
 import moment from 'moment';
 
 @Component({

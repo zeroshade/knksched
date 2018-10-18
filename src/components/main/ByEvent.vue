@@ -36,8 +36,8 @@
 
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator';
-import BaseGrid from '../../mixins/base-grid';
-import Event from '../../helpers/event';
+import BaseGrid from '@/mixins/base-grid';
+import Event from '@/helpers/event';
 import EventCard from './EventCard.vue';
 import moment from 'moment';
 

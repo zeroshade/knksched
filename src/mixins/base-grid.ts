@@ -1,6 +1,6 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Schedule from '../helpers/schedule';
-import Event from '../helpers/event';
+import Schedule from '@/helpers/schedule';
+import Event from '@/helpers/event';
 import moment from 'moment';
 
 @Component

@@ -8,6 +8,14 @@
     </v-toolbar>
     <v-navigation-drawer dark app clipped permanent width='250'>
       <v-list dense>
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-btn v-if='!$auth.isAuthenticated()' @click='$auth.login()'>Login</v-btn>
+            <v-btn v-else @click='$auth.logout().then(() => {$forceUpdate();})'>Logout</v-btn>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider></v-divider>
+
         <v-list-group prepend-icon="event" value="true">
           <v-list-tile slot="activator">
             <v-list-tile-title>Events</v-list-tile-title>

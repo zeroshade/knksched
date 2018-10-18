@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "auth0-js": "^9.8.0",
     "axios": "^0.18.0",
     "moment": "^2.22.2",
     "vue": "^2.5.17",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^2.8.94",
+    "@types/auth0-js": "^8.11.6",
     "@types/jest": "^23.1.4",
     "@types/lodash": "^4.14.117",
     "@types/vue-color": "^2.4.0",

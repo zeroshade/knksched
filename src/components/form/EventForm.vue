@@ -86,7 +86,7 @@
 
 <script lang='ts'>
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Event, { IEvent } from '../../helpers/event';
+import Event, { IEvent } from '@/helpers/event';
 import TimeInput from './TimeInput.vue';
 
 @Component({

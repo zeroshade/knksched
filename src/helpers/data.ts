@@ -1,7 +1,5 @@
 
-const devUrl = 'http://localhost:8090';
-const prodUrl = 'http://knk-backend.herokuapp.com';
-export const url = process.env.NODE_ENV === 'development' ? devUrl : prodUrl;
+export const url = process.env.VUE_APP_BACKEND;
 
 export interface IDataHeader {
   text: string;
