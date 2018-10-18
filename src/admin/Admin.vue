@@ -7,13 +7,15 @@
       </v-toolbar-title>
     </v-toolbar>
     <v-navigation-drawer dark app clipped permanent width='250'>
+      <v-btn v-if='!$auth.isAuthenticated()' @click='$auth.login()'>Login</v-btn>
+      <div v-else>
+        <v-avatar class='mt-2' :tile='false' size='48px' color='grey lighten-4'>
+          <img :src='$auth.user.picture' alt='avatar' />
+        </v-avatar> Welcome {{ $auth.user.name }}
+        <v-btn @click='$auth.logout().then(() => {$forceUpdate();})'>Logout</v-btn>
+      </div>
+
       <v-list dense>
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-btn v-if='!$auth.isAuthenticated()' @click='$auth.login()'>Login</v-btn>
-            <v-btn v-else @click='$auth.logout().then(() => {$forceUpdate();})'>Logout</v-btn>
-          </v-list-tile-content>
-        </v-list-tile>
         <v-divider></v-divider>
 
         <v-list-group prepend-icon="event" value="true">
@@ -117,7 +119,7 @@ export default class Admin extends Vue {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
-  color: #2c3e50;
+  // color: #2c3e50;
 }
 
 </style>

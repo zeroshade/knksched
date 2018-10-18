@@ -5,9 +5,10 @@ import _Vue from 'vue';
 const auth0 = new WebAuth({
   domain: process.env.VUE_APP_AUTH0_DOMAIN,
   clientID: process.env.VUE_APP_AUTH0_CLIENT_ID,
-  redirectUri: `http://${location.host}${process.env.BASE_URL}/callback`,
+  redirectUri: `http://${location.host}${process.env.BASE_URL}callback`,
   responseType: 'token id_token',
-  scope: 'openid name email picture',
+  scope: 'openid profile',
+  audience: `https://${process.env.VUE_APP_AUTH0_DOMAIN}/api/v2/`,
 });
 
 export class Auth extends _Vue {
