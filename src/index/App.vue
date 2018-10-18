@@ -66,10 +66,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Schedule, { loadSchedules } from './helpers/schedule';
-import Agenda from './components/main/Agenda.vue';
-import RoomGrid from './components/main/RoomGrid.vue';
-import ByEvent from './components/main/ByEvent.vue';
+import Schedule, { loadSchedules } from '@/helpers/schedule';
+import Agenda from './components/Agenda.vue';
+import RoomGrid from './components/RoomGrid.vue';
+import ByEvent from './components/ByEvent.vue';
 
 @Component({
   components: {
@@ -111,10 +111,12 @@ export default class App extends Vue {
 }
 </script>
 
-<style scoped lang="styl">
-@import '~vuetify/src/stylus/theme.styl'
-
-$material-dark.background = #EF6100
-
-@import '~vuetify/src/stylus/main.styl'
+<style lang="scss">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  background: #ef6100;
+}
 </style>

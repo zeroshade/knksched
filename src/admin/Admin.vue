@@ -71,10 +71,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { SchedHeaders } from './helpers/data';
-import Schedule, { loadSchedules } from './helpers/schedule';
-import SchedInfo from './components/admin/SchedInfo.vue';
-import EventTable from './components/admin/EventTable.vue';
+import { SchedHeaders } from '@/helpers/data';
+import Schedule, { loadSchedules } from '@/helpers/schedule';
+import SchedInfo from './components/SchedInfo.vue';
+import EventTable from './components/EventTable.vue';
 
 @Component({
   components: {
@@ -118,7 +118,6 @@ export default class Admin extends Vue {
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
   color: #2c3e50;
-
 }
 
 </style>

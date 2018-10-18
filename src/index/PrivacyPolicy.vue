@@ -12,7 +12,7 @@
 
 <script lang='ts'>
 import { Component, Vue } from 'vue-property-decorator';
-import Privacy from '@/components/main/Privacy.vue';
+import Privacy from './components/Privacy.vue';
 
 @Component({
   components: {
@@ -23,9 +23,6 @@ export default class PrivacyPolicy extends Vue {}
 </script>
 
 <style scoped lang="styl">
-@import '~vuetify/src/stylus/theme.styl'
-
-$material-dark.background = #EF6100
-
-@import '~vuetify/src/stylus/main.styl'
+#app
+  background: #EF6100
 </style>

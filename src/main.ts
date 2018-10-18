@@ -1,24 +1,20 @@
-import Vue, { VNode, Component } from 'vue';
-import './plugins/vuetify';
-import '@mdi/font/css/materialdesignicons.css';
+import Vue, { VNode, AsyncComponent } from 'vue';
+import '@/plugins/vuetify';
+// import './assets/main.styl';
 import moment from 'moment';
 import VueMoment from 'vue-moment';
-import AuthPlugin from './plugins/auth';
-import App from './App.vue';
-import Admin from './Admin.vue';
-import Callback from './components/main/Callback.vue';
-import Privacy from './PrivacyPolicy.vue';
+import AuthPlugin from '@/plugins/auth';
 
 Vue.use(VueMoment, { moment });
 Vue.use(AuthPlugin);
 
 Vue.config.productionTip = false;
 
-const routes: {[index: string]: Component} = {
-  '/': App,
-  '/admin': Admin,
-  '/callback': Callback,
-  '/privacy': Privacy,
+const routes: {[index: string]: AsyncComponent} = {
+  '/': () => import('./index/App.vue'),
+  '/admin': () => import('./admin/Admin.vue'),
+  '/callback': () => import('@/components/Callback.vue'),
+  '/privacy': () => import('./index/PrivacyPolicy.vue'),
 };
 
 const MyVue = Vue.extend({
@@ -28,9 +24,9 @@ const MyVue = Vue.extend({
     };
   },
   computed: {
-    viewComponent(): Component {
+    viewComponent(): AsyncComponent {
       const matchingView = routes[this.currentRoute];
-      return matchingView ? matchingView : Admin;
+      return matchingView ? matchingView : () => import('./index/App.vue');
     },
   },
   render(h): VNode {

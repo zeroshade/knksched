@@ -100,7 +100,7 @@ import Event, { IEvent } from '@/helpers/event';
 import { EventHeaders } from '@/helpers/data';
 import InlineEditText from './InlineEditText.vue';
 import InlineEditTime from './InlineEditTime.vue';
-import EventForm from '../form/EventForm.vue';
+import EventForm from './form/EventForm.vue';
 import moment from 'moment';
 
 @Component({
