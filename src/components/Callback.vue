@@ -8,7 +8,7 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class Callback extends Vue {
   public mounted() {
     this.$auth.handleAuthentication().then(() => {
-      window.location.href = localStorage.getItem('redir') || process.env.BASE_URL;
+      window.location.href = localStorage.getItem('redir') || process.env.BASE_URL || '';
     });
   }
 }

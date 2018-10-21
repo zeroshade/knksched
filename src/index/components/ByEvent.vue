@@ -17,16 +17,13 @@
           row wrap hide-actions content-tag='v-layout' :custom-sort='customSort' :filter='filter'>
           <p slot='header' class='ma-3 subheading font-italic white--text text-uppercase'>{{ day | moment('dddd') }}</p>
           <v-flex slot='item' slot-scope='props' xs12 sm6 md4 lg3>
-            <v-card @click.native='props.item.viewing = true' raised height='100%' style='cursor: pointer;'
+            <v-card @click.native='eventClicked(props.item)' raised height='100%' style='cursor: pointer;'
               :class='`${colorMap[props.item.room] || colorMap.other} elevation-9`'>
               <v-card-title class='title'>{{ props.item.title }}</v-card-title>
               <v-card-text>
                 <p class='caption font-italic font-weight-medium'>{{ props.item.start().format('h:mm A') }} :: {{ props.item.room }}</p>
               </v-card-text>
             </v-card>
-            <v-dialog v-model='props.item.viewing' width="500">
-              <EventCard :color='colorMap[props.item.room] || colorMap.other' :ev='props.item'></EventCard>
-            </v-dialog>
           </v-flex>
         </v-data-iterator>
       </template>
@@ -38,17 +35,18 @@
 import { Component } from 'vue-property-decorator';
 import BaseGrid from '@/mixins/base-grid';
 import Event from '@/helpers/event';
-import EventCard from './EventCard.vue';
+import { EventBus } from '@/helpers/event-bus';
 import moment from 'moment';
 
-@Component({
-  components: {
-    EventCard,
-  },
-})
+@Component
 export default class ByEvent extends BaseGrid {
   public pagination: object = {rowsPerPage: -1};
   public search = '';
+
+  public eventClicked(ev: Event) {
+    const color = this.colorMap[ev.room] || this.colorMap.other;
+    EventBus.$emit('event-click', { ev, color });
+  }
 
   public get events(): Event[] {
     if (this.schedule === null) { return []; }

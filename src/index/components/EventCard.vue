@@ -2,6 +2,11 @@
   <v-card>
     <v-card-title :class='`${color} headline`' primary-title>
       <v-icon v-if='ev.icon' dark>{{ev.icon}}</v-icon> {{ ev.title }}
+      <v-spacer></v-spacer>
+
+      <v-icon v-if='$auth.isAuthenticated()' @click='toggleFav()'>
+        {{ filled ? 'star' : 'star_border' }}
+      </v-icon>
     </v-card-title>
 
     <v-card-text>
@@ -37,5 +42,17 @@ import Event from '@/helpers/event';
 export default class EventCard extends Vue {
   @Prop(String) public color!: string;
   @Prop(Object) public ev!: Event;
+
+  public isfav(): boolean {
+    return this.$auth.userfavs.includes(this.ev.id);
+  }
+
+  public toggleFav() {
+    this.ev.favorited = this.$auth.toggleFavorite(this.ev.id);
+  }
+
+  public get filled(): boolean {
+    return this.ev.favorited === null ? this.isfav() : this.ev.favorited;
+  }
 }
 </script>

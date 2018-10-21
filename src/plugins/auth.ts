@@ -1,4 +1,4 @@
-import { WebAuth, Auth0DecodedHash, Auth0Error } from 'auth0-js';
+import { WebAuth, Management, Auth0DecodedHash, Auth0Error, Auth0UserProfile } from 'auth0-js';
 import _Vue from 'vue';
 
 const auth0 = new WebAuth({
@@ -7,10 +7,44 @@ const auth0 = new WebAuth({
   redirectUri: `http://${location.host}${process.env.BASE_URL}callback`,
   responseType: 'token id_token',
   scope: 'openid profile permissions roles email',
-  audience: 'http://knk-backend.herokuapp.com/',
+  audience: 'https://knk.auth0.com/api/v2/',
 });
 
 export class Auth extends _Vue {
+  public get userfavs(): number[] {
+    return this.user['http://www.thelazydm.org/favs'];
+  }
+
+  public toggleFavorite(id: number): boolean {
+    const auth0mg = new Management({
+      domain: process.env.VUE_APP_AUTH0_DOMAIN || '',
+      token: this.profileToken,
+    });
+    let favs = this.userfavs;
+    const ret = !favs.includes(id);
+    if (ret) {
+      favs.push(id);
+    } else {
+      favs = favs.filter((f) => f !== id);
+    }
+
+    auth0mg.patchUserMetadata(this.user.sub, {favs}, (err, prof: Auth0UserProfile) => {
+      const user = this.user;
+      user['http://www.thelazydm.org/favs'] = prof.user_metadata.favs;
+      this.user = user;
+    });
+
+    return ret;
+  }
+
+  public get profileToken(): string {
+    return localStorage.getItem('profile_token') || '';
+  }
+
+  public set profileToken(token: string) {
+    localStorage.setItem('profile_token', token);
+  }
+
   public get token(): string {
     return localStorage.getItem('id_token') || '';
   }
@@ -79,9 +113,14 @@ export class Auth extends _Vue {
           this.accessToken = authResult.accessToken;
           this.token = authResult.idToken;
           this.user = authResult.idTokenPayload;
-          resolve();
+          auth0.checkSession({
+            scope: 'read:current_user update:current_user_metadata create:current_user_metadata',
+          }, (_, result) => {
+            this.profileToken = result.accessToken;
+            resolve();
+          });
         } else if (err) {
-          this.logout(process.env.BASE_URL);
+          this.logout(process.env.BASE_URL || '');
           reject(err);
         }
       });

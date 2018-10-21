@@ -7,9 +7,13 @@
     >
       <v-list class='pa-1'>
         <v-list-tile tag='div'>
-          <v-list-tile-content>
-            <v-list-tile-title>Events</v-list-tile-title>
-          </v-list-tile-content>
+          <v-list-tile-title>Events</v-list-tile-title>
+          <v-list-tile-action>
+            <v-tooltip right>
+              <v-icon slot='activator' @click='refresh()'>refresh</v-icon>
+              <span>Refresh the Events</span>
+            </v-tooltip>
+          </v-list-tile-action>
         </v-list-tile>
       </v-list>
       <v-list class='pt-0' dense>
@@ -73,6 +77,9 @@
       </v-dialog>
     </div>
     <v-content>
+      <v-dialog v-model='card' width='500'>
+        <EventCard v-if='showev !== null' :ev='showev' :color='cardcolor'></EventCard>
+      </v-dialog>
       <v-tabs-items v-model='tab'>
         <v-tab-item>
           <Agenda :pixelHeight='50' :schedule='curSchedule'></Agenda>
@@ -97,12 +104,16 @@ import Schedule, { loadSchedules } from '@/helpers/schedule';
 import Agenda from './components/Agenda.vue';
 import RoomGrid from './components/RoomGrid.vue';
 import ByEvent from './components/ByEvent.vue';
+import Event from '@/helpers/event';
+import EventCard from './components/EventCard.vue';
+import { EventBus } from '@/helpers/event-bus';
 
 @Component({
   components: {
     Agenda,
     RoomGrid,
     ByEvent,
+    EventCard,
   },
 })
 export default class App extends Vue {
@@ -112,11 +123,31 @@ export default class App extends Vue {
   public tab: number = 1;
   public fixed = false;
 
+  public card = false;
+  public showev: Event | null = null;
+  public cardcolor = '';
+
   public created() {
-    loadSchedules().then((scheds: Schedule[]) => {
-      this.items = scheds;
-      this.schedule = 0;
+    this.fetch();
+  }
+
+  public mounted() {
+    EventBus.$on('event-click', (data: {ev: Event, color: string}) => {
+      this.showev = data.ev;
+      this.cardcolor = data.color;
+      this.card = true;
     });
+  }
+
+  public refresh() {
+    this.select = null;
+    this.fetch();
+  }
+
+  public async fetch() {
+    const scheds = await loadSchedules();
+    this.items = scheds;
+    this.schedule = 0;
   }
 
   public get schedule(): number {

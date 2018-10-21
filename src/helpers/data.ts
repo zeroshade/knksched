@@ -1,5 +1,5 @@
 
-export const url = process.env.VUE_APP_BACKEND;
+export const url = process.env.VUE_APP_BACKEND || '';
 
 export interface IDataHeader {
   text: string;

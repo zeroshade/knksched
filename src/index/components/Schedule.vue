@@ -62,7 +62,7 @@
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { EventCol } from '@/helpers/event';
+import Event, { EventCol } from '@/helpers/event';
 import EventBlock from './EventBlock.vue';
 
 @Component({

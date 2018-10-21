@@ -13,7 +13,7 @@
             marginTop: ev.margin + 'px',
           }">
           <v-btn class='entry full-height pl-0 pr-0' dark :color='colorMap[ev.ev.room] || colorMap["other"]'
-            @click.stop='ev.ev.viewing = true' block>
+            @click.native='eventClicked(ev.ev)' block>
             <span v-bind:style="{
                 height: (ev.ev.duration().asMinutes()/30 * pixelHeight - 12) + 'px',
               }">
@@ -21,9 +21,6 @@
               {{ ev.ev.title }}
             </span>
           </v-btn>
-          <v-dialog v-model="ev.ev.viewing" width="500">
-            <EventCard :color='colorMap[ev.ev.room] || colorMap.other' :ev='ev.ev'></EventCard>
-          </v-dialog>
         </div>
       </v-flex>
     </template>
@@ -33,6 +30,7 @@
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Event from '@/helpers/event';
+import { EventBus } from '@/helpers/event-bus';
 import EventCard from './EventCard.vue';
 
 @Component({
@@ -45,6 +43,11 @@ export default class EventBlock extends Vue {
   @Prop(Array) public events!: Event[];
   @Prop(Date) public date!: Date;
   @Prop(Object) public colorMap!: {[index: string]: string};
+
+  public eventClicked(ev: Event) {
+    const color = this.colorMap[ev.room] || this.colorMap.other;
+    EventBus.$emit('event-click', { ev, color });
+  }
 
   public get eventColumns(): Event[][] {
     const cols: Event[][] = [];

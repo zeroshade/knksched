@@ -28,7 +28,7 @@ export default class Event {
   public schedId: number = -1;
   public organizer = '';
   public desc = '';
-  public viewing = false;
+  public favorited: boolean | null = null;
   public hideAgenda = false;
 
   constructor(ev: IEvent) {
