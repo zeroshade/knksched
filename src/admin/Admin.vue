@@ -1,73 +1,49 @@
 <template>
   <v-app dark>
     <v-toolbar dark app clipped-left dense>
+      <v-toolbar-side-icon><a href='/'><v-icon>home</v-icon></a></v-toolbar-side-icon>
       <v-toolbar-title>
         Admin Panel
         {{ (select !== null) ? `> ${curSchedule.title}` : '' }}
       </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn round color="secondary" dark v-if='!$auth.isAuthenticated()' @click='login()'>
+        Login
+      </v-btn>
+      <template v-else>
+        <v-avatar class='mt-1' :tile='false' size='38px' color='grey lighten-4'>
+          <img :src='$auth.user.picture' alt='avatar' />
+        </v-avatar>
+        <v-btn round color="secondary" dark @click='$auth.logout("admin")'>Logout</v-btn>
+      </template>
     </v-toolbar>
     <v-navigation-drawer dark app clipped permanent width='250'>
-      <v-btn v-if='!$auth.isAuthenticated()' @click='$auth.login()'>Login</v-btn>
-      <div v-else>
-        <v-avatar class='mt-2' :tile='false' size='48px' color='grey lighten-4'>
-          <img :src='$auth.user.picture' alt='avatar' />
-        </v-avatar> Welcome {{ $auth.user.name }}
-        <v-btn @click='$auth.logout().then(() => {$forceUpdate();})'>Logout</v-btn>
-      </div>
-
-      <v-list dense>
-        <v-divider></v-divider>
-
-        <v-list-group prepend-icon="event" value="true">
-          <v-list-tile slot="activator">
-            <v-list-tile-title>Events</v-list-tile-title>
-          </v-list-tile>
-
-          <template v-for='(item, index) in items'>
-            <v-divider></v-divider>
-
-            <v-list-tile @click='schedule = index' :value='schedule === index'>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              <v-list-tile-action>
-                <v-icon>mdi-calendar-edit</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
-          </template>
-        </v-list-group>
+      <v-list dense v-if='$auth.isAuthenticated() && items.length > 0 && $auth.isAdmin()'>
+        <EventNav v-model='schedule' :items='items.map(s => s.title)'>
+          <v-icon slot-scope='props'>mdi-calendar-edit</v-icon>
+        </EventNav>
       </v-list>
     </v-navigation-drawer>
     <v-content>
-      <v-container fluid v-if='curSchedule !== null'>
-        <v-layout align-top justify-left pb-2>
-          <v-flex xs5>
-            <SchedInfo :schedule='curSchedule'></SchedInfo>
-          </v-flex>
-          <v-flex offset-xs1 xs5>
-            <v-card>
-              <v-card-title>Icon Links</v-card-title>
-              <v-card-text>
-                <p>
-                  Visit one of the links below to see icons. Use the name in the icon field to use it.
-                  For instance, on the Material Icons list (the second link) you can find the icon named
-                  'rowing'. If you put `rowing` in the icon text field, you'll get <v-icon>rowing</v-icon></p>
-                <p><a href='https://cdn.materialdesignicons.com/2.8.94/'>Material Design Icons</a></p>
-                <p><a href='https://material.io/tools/icons/'>Material Icons</a></p>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs12>
-            <EventTable
-              @new-event='e => curSchedule.events.push(e)'
-              :schedId='curSchedule.id'
-              :events='curSchedule.events'
-              :dateRange='curSchedule.dateRangeOptions()'
-            ></EventTable>
-          </v-flex>
-        </v-layout>
+      <v-container fluid>
+        <AdminPanel :schedule='curSchedule'></AdminPanel>
       </v-container>
     </v-content>
+    <div class='text-xs-center'>
+      <v-dialog
+        v-model='dialog'
+        hide-overlay
+        persistent
+        width='300'
+      >
+        <v-card color='primary' dark>
+          <v-card-text>
+            Logging in...
+            <v-progress-linear indeterminate color='white' class='mb-0'></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-app>
 </template>
 
@@ -75,17 +51,19 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { SchedHeaders } from '@/helpers/data';
 import Schedule, { loadSchedules } from '@/helpers/schedule';
-import SchedInfo from './components/SchedInfo.vue';
-import EventTable from './components/EventTable.vue';
+import EventNav from '@/components/EventNav.vue';
+import AdminPanel from './components/AdminPanel.vue';
+import axios from 'axios';
 
 @Component({
   components: {
-    SchedInfo,
-    EventTable,
+    AdminPanel,
+    EventNav,
   },
 })
 export default class Admin extends Vue {
   public readonly headers = SchedHeaders;
+  public dialog = false;
   public items: Schedule[] = [];
   public select: number | null = null;
 
@@ -93,6 +71,11 @@ export default class Admin extends Vue {
     loadSchedules().then((scheds: Schedule[]) => {
       this.items = scheds;
     });
+  }
+
+  public login() {
+    this.dialog = true;
+    this.$auth.login('/admin');
   }
 
   public get schedule(): number {
@@ -110,6 +93,13 @@ export default class Admin extends Vue {
     if (this.select === null) { return null; }
     return this.items[this.select];
   }
+
+  // public async testAuth() {
+  //   const resp = await axios.get(`${process.env.VUE_APP_BACKEND}/test/secured`, {
+  //     headers: { Authorization: `Bearer ${this.$auth.accessToken}` }
+  //   });
+  //   console.log(resp);
+  // }
 }
 </script>
 

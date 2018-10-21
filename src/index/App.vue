@@ -28,6 +28,11 @@
       </v-list>
       <v-divider></v-divider>
       <v-list class='pa-1'>
+        <v-list-tile tag='div' v-if='$auth.isAdmin()'>
+          <v-list-tile-content>
+            <v-list-tile-title><a href='/admin'>Admin Panel</a></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile tag='div'>
           <v-list-tile-content>
             <v-list-tile-title class='caption'><a href='/privacy'>Privacy Policy</a></v-list-tile-title>
@@ -39,12 +44,34 @@
       <v-toolbar-side-icon @click.stop='drawer = !drawer'></v-toolbar-side-icon>
       <v-toolbar-title>Kith &amp; Kink Schedule</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn round color='orange darken-4' v-if='!$auth.isAuthenticated()' @click='$auth.login("/")'>Login</v-btn>
+      <template v-else>
+        <v-avatar class='mt-1' :tile='false' size='38px' color='grey lighten-4'>
+          <img :src='$auth.user.picture' alt='avatar' />
+        </v-avatar>
+        <v-btn round color='orange darken-4' @click='$auth.logout("")'>Logout</v-btn>
+      </template>
       <v-tabs slot='extension' centered grow color='orange' slider-color='yellow' v-model='tab'>
         <v-tab ripple>Agenda</v-tab>
         <v-tab ripple>Room View</v-tab>
         <v-tab ripple>Event View</v-tab>
       </v-tabs>
     </v-toolbar>
+    <div class='text-xs-center'>
+      <v-dialog
+        hide-overlay
+        persistent
+        width='300'
+        :value='curSchedule === null'
+      >
+        <v-card color='orange darken-2' class='elevation-8'>
+          <v-card-text>
+            Loading!
+            <v-progress-linear indeterminate color='white' class='mb-0'></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
     <v-content>
       <v-tabs-items v-model='tab'>
         <v-tab-item>

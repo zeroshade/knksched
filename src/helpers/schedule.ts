@@ -49,7 +49,7 @@ export default class Schedule {
     if (this.events.length !== 0) { return; }
 
     try {
-      const response = await axios.get(`${url}/${this.id}`);
+      const response = await axios.get(`${url}/sched/${this.id}`);
       for (const item of response.data) {
         this.events.push(new Event(item));
       }

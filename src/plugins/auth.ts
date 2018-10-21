@@ -1,14 +1,13 @@
 import { WebAuth, Auth0DecodedHash, Auth0Error } from 'auth0-js';
 import _Vue from 'vue';
 
-
 const auth0 = new WebAuth({
   domain: process.env.VUE_APP_AUTH0_DOMAIN,
   clientID: process.env.VUE_APP_AUTH0_CLIENT_ID,
   redirectUri: `http://${location.host}${process.env.BASE_URL}callback`,
   responseType: 'token id_token',
-  scope: 'openid profile',
-  audience: `https://${process.env.VUE_APP_AUTH0_DOMAIN}/api/v2/`,
+  scope: 'openid profile permissions roles email',
+  audience: 'http://knk-backend.herokuapp.com/',
 });
 
 export class Auth extends _Vue {
@@ -38,23 +37,32 @@ export class Auth extends _Vue {
   }
 
   public get user(): any {
-    return JSON.parse(localStorage.getItem('user') || '');
+    return JSON.parse(localStorage.getItem('user') || '{}');
   }
 
   public set user(user: any) {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  public login() {
+  public isAdmin(): boolean {
+    return this.isAuthenticated() && this.user['http://www.thelazydm.org/roles'].includes('admin');
+  }
+
+  public login(redir: string) {
+    localStorage.setItem('redir', redir);
     auth0.authorize();
   }
 
-  public logout() {
+  public logout(redir: string) {
     return new Promise((resolve, reject) => {
+      auth0.logout({
+        returnTo: `http://${location.host}${process.env.BASE_URL}${redir}`,
+        clientID: process.env.VUE_APP_AUTH0_CLIENT_ID,
+      });
       localStorage.removeItem('access_token');
       localStorage.removeItem('id_token');
       localStorage.removeItem('expires_at');
-      window.location.pathname = '/admin';
+      localStorage.removeItem('user');
       resolve();
     });
   }
@@ -73,7 +81,7 @@ export class Auth extends _Vue {
           this.user = authResult.idTokenPayload;
           resolve();
         } else if (err) {
-          this.logout();
+          this.logout(process.env.BASE_URL);
           reject(err);
         }
       });
