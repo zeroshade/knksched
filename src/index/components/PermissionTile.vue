@@ -8,7 +8,7 @@
       <p class='ml-4 pl-4 mb-0 font-weight-bold privacy-grey'>
         {{ app.title }}
       </p>
-      <p class='ml-4 pl-4 font-weight-thin privacy-grey'>
+      <p class='ml-4 pl-4 font-weight-regular privacy-grey'>
         {{ app.text }}
       </p>
     </template>

@@ -1,7 +1,7 @@
 <template>
-  <v-app dark>
+  <v-app dark id='admin'>
     <v-toolbar dark app clipped-left dense>
-      <v-toolbar-side-icon><a href='/'><v-icon>home</v-icon></a></v-toolbar-side-icon>
+      <v-toolbar-side-icon><router-link to='/'><v-icon>home</v-icon></router-link></v-toolbar-side-icon>
       <v-toolbar-title>
         Admin Panel
         {{ (select !== null) ? `> ${curSchedule.title}` : '' }}

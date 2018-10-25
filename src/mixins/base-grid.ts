@@ -30,7 +30,7 @@ export default class BaseGrid extends Vue {
     if (this.$vuetify.breakpoint.smAndDown) {
       base.paddingTop = '24px';
     }
-    // base.height = '1600px';
+    // base.height = '1727px';
     return base;
   }
 

@@ -1,9 +1,9 @@
 <template>
-  <v-app dark>
+  <v-app dark id='schedule'>
     <v-navigation-drawer
       v-model='drawer'
-      absolute
       temporary
+      app
     >
       <v-list class='pa-1'>
         <v-list-tile tag='div'>
@@ -19,7 +19,7 @@
       <v-list class='pt-0' dense>
         <v-divider light></v-divider>
 
-        <v-list-tile v-for='(s, idx) in items' :value='schedule === idx'
+        <v-list-tile v-for='(s, idx) in items' :value='select === idx'
           :key='s.id' @click='schedule = idx'>
           <v-list-tile-action v-if='idx === select'>
             <v-icon>chevron_right</v-icon>
@@ -30,25 +30,47 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <template v-if='$auth.isAuthenticated()'>
+        <v-divider />
+        <v-list dense two-line subheader>
+          <v-subheader>Starred Events</v-subheader>
+
+          <v-list-tile v-for='e in favs'
+            :key='`fav-${e.id}`'
+            @click='display(e)'
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>{{ e.title }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ e.start().format('ddd') }} - {{ e.startTime }} - {{ e.room }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+
+            <v-list-tile-action>
+              <v-icon>star</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
+        </v-list>
+      </template>
       <v-divider></v-divider>
       <v-list class='pa-1'>
         <v-list-tile tag='div' v-if='$auth.isAdmin()'>
           <v-list-tile-content>
-            <v-list-tile-title><a href='/admin'>Admin Panel</a></v-list-tile-title>
+            <v-list-tile-title><router-link to='/admin'>Admin Panel</router-link></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile tag='div'>
           <v-list-tile-content>
-            <v-list-tile-title class='caption'><a href='/privacy'>Privacy Policy</a></v-list-tile-title>
+            <v-list-tile-title class='caption'><router-link to='/privacy'>Privacy Policy</router-link></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar dense tabs color='orange' app>
-      <v-toolbar-side-icon @click.stop='drawer = !drawer'></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.stop='drawer = !drawer'><v-icon>menu</v-icon></v-toolbar-side-icon>
       <v-toolbar-title>Kith &amp; Kink Schedule</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn round color='orange darken-4' v-if='!$auth.isAuthenticated()' @click='$auth.login("/")'>Login</v-btn>
+      <v-btn round color='orange darken-4' v-if='!$auth.isAuthenticated()' @click='login()'>Login / Sign Up</v-btn>
       <template v-else>
         <v-avatar class='mt-1' :tile='false' size='38px' color='grey lighten-4'>
           <img :src='$auth.user.picture' alt='avatar' />
@@ -56,41 +78,19 @@
         <v-btn round color='orange darken-4' @click='$auth.logout("")'>Logout</v-btn>
       </template>
       <v-tabs slot='extension' centered grow color='orange' slider-color='yellow' v-model='tab'>
-        <v-tab ripple>Agenda</v-tab>
-        <v-tab ripple>Room View</v-tab>
-        <v-tab ripple>Event View</v-tab>
+        <v-tab ripple to='/agenda'>Agenda</v-tab>
+        <v-tab ripple to='/rooms'>Room View</v-tab>
+        <v-tab ripple to='/events'>Event View</v-tab>
       </v-tabs>
     </v-toolbar>
-    <div class='text-xs-center'>
-      <v-dialog
-        hide-overlay
-        persistent
-        width='300'
-        :value='curSchedule === null'
-      >
-        <v-card color='orange darken-2' class='elevation-8'>
-          <v-card-text>
-            Loading!
-            <v-progress-linear indeterminate color='white' class='mb-0'></v-progress-linear>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </div>
+    <Loading :value='loading' color='orange darken-2' />
     <v-content>
       <v-dialog v-model='card' width='500'>
-        <EventCard v-if='showev !== null' :ev='showev' :color='cardcolor'></EventCard>
+        <EventCard v-if='showev !== null' :ev='showev' :color='cardcolor' />
       </v-dialog>
-      <v-tabs-items v-model='tab'>
-        <v-tab-item>
-          <Agenda :pixelHeight='50' :schedule='curSchedule'></Agenda>
-        </v-tab-item>
-        <v-tab-item>
-          <RoomGrid :pixelHeight='50' :schedule='curSchedule'></RoomGrid>
-        </v-tab-item>
-        <v-tab-item>
-          <ByEvent :pixelHeight='50' :schedule='curSchedule'></ByEvent>
-        </v-tab-item>
-      </v-tabs-items>
+      <transition name='fade-transition'>
+        <router-view :pixelHeight='50' :schedule='curSchedule' />
+      </transition>
     </v-content>
     <v-footer :fixed='fixed' app>
       <span>&copy; 2018</span>
@@ -98,61 +98,87 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script lang='ts'>
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import Schedule, { loadSchedules } from '@/helpers/schedule';
-import Agenda from './components/Agenda.vue';
-import RoomGrid from './components/RoomGrid.vue';
-import ByEvent from './components/ByEvent.vue';
+import Loading from '@/components/Loading.vue';
 import Event from '@/helpers/event';
 import EventCard from './components/EventCard.vue';
 import { EventBus } from '@/helpers/event-bus';
 
 @Component({
   components: {
-    Agenda,
-    RoomGrid,
-    ByEvent,
+    Loading,
     EventCard,
   },
 })
-export default class App extends Vue {
+export default class Layout extends Vue {
   public items: Schedule[] = [];
   public select: number | null = null;
+  public tab: string = '';
   public drawer = false;
-  public tab: number = 1;
   public fixed = false;
+  public loading = false;
+  public transitionName = '';
 
   public card = false;
   public showev: Event | null = null;
   public cardcolor = '';
 
-  public created() {
-    this.fetch();
-  }
+  public favList: number[] = [];
 
-  public mounted() {
-    EventBus.$on('event-click', (data: {ev: Event, color: string}) => {
-      this.showev = data.ev;
-      this.cardcolor = data.color;
-      this.card = true;
-    });
+  public created() {
+    this.refresh();
+    this.tab = this.$route.path;
   }
 
   public refresh() {
-    this.select = null;
     this.fetch();
   }
 
+  public login() {
+    this.loading = true;
+    this.$auth.login(this.$route.path);
+  }
+
+  public mounted() {
+    if (this.$auth.isAuthenticated()) {
+      this.favList = this.$auth.userfavs;
+    }
+    EventBus.$on('event-click', (data: {ev: Event, color: string}) => {
+      this.display(data.ev, data.color);
+    });
+    this.$auth.$on('update:favs', (f: number[]) => { this.favList = f; });
+  }
+
+  public display(ev: Event, color?: string) {
+    this.showev = ev;
+    this.cardcolor = color || this.eventColor(ev);
+    this.card = true;
+  }
+
+  public eventColor(ev: Event): string {
+    if (!this.curSchedule) { return ''; }
+    return this.curSchedule.colorMap[ev.room] || this.curSchedule.colorMap.other;
+  }
+
   public async fetch() {
+    this.loading = true;
     const scheds = await loadSchedules();
     this.items = scheds;
     this.schedule = 0;
+    this.loading = false;
+  }
+
+  public get favs(): Event[] {
+    if (this.curSchedule === null || !this.favList) { return []; }
+
+    return this.curSchedule.events.filter((e) => this.favList.includes(e.id))
+      .sort((a, b) => a.start().diff(b.start()));
   }
 
   public get schedule(): number {
-    if (this.select === null) { return -1; }
-    return this.select;
+    return (this.select === null) ? -1 : this.select;
   }
 
   public set schedule(idx: number) {
@@ -163,18 +189,24 @@ export default class App extends Vue {
   }
 
   public get curSchedule(): Schedule | null {
-    if (this.select === null) { return null; }
-    return this.items[this.select];
+    return (this.select === null) ? null : this.items[this.select];
   }
 }
 </script>
 
 <style lang="scss">
 #app {
+}
+
+#schedule {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   background: #ef6100;
+}
+
+#admin {
+
 }
 </style>

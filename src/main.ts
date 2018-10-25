@@ -1,41 +1,44 @@
 import Vue, { VNode, AsyncComponent } from 'vue';
-import '@/plugins/vuetify';
-// import './assets/main.styl';
+import VueRouter from 'vue-router';
 import moment from 'moment';
 import VueMoment from 'vue-moment';
 import AuthPlugin from '@/plugins/auth';
+import '@/plugins/vuetify';
+import Main from './App.vue';
+
+const Layout = () => import('./index/Layout.vue');
+const Admin = () => import('./admin/Admin.vue');
+const Callback = () => import('@/components/Callback.vue');
+
+const Privacy = () => import('./index/components/Privacy.vue');
+const RoomGrid = () => import('./index/components/RoomGrid.vue');
+const Agenda = () => import('./index/components/Agenda.vue');
+const ByEvent = () => import('./index/components/ByEvent.vue');
 
 Vue.use(VueMoment, { moment });
 Vue.use(AuthPlugin);
+Vue.use(VueRouter);
 
 Vue.config.productionTip = false;
 
-const routes: {[index: string]: AsyncComponent} = {
-  '/': () => import('./index/App.vue'),
-  '/admin': () => import('./admin/Admin.vue'),
-  '/callback': () => import('@/components/Callback.vue'),
-  '/privacy': () => import('./index/PrivacyPolicy.vue'),
-};
-
-const MyVue = Vue.extend({
-  data() {
-    return {
-      currentRoute: window.location.pathname,
-    };
+const routes = [
+  {
+    path: '/', component: Layout,
+    children: [
+      { path: '', redirect: '/rooms' },
+      { path: 'rooms', component: RoomGrid },
+      { path: 'agenda', component: Agenda },
+      { path: 'events', component: ByEvent },
+      { path: 'privacy', component: Privacy },
+    ],
   },
-  computed: {
-    viewComponent(): AsyncComponent {
-      const matchingView = routes[this.currentRoute];
-      return matchingView ? matchingView : () => import('./index/App.vue');
-    },
-  },
-  render(h): VNode {
-    return h(this.viewComponent);
-  },
-});
+  { path: '/admin', component: Admin },
+  { path: '/callback', component: Callback },
+];
 
-const app = new MyVue({}).$mount('#app');
+const router = new VueRouter({ mode: 'history', routes });
 
-window.addEventListener('popstate', () => {
-  app.currentRoute = window.location.pathname;
-});
+const app = new Vue({
+  router,
+  render: (h) => h(Main),
+}).$mount('#app');

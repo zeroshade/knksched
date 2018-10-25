@@ -34,6 +34,8 @@ export class Auth extends _Vue {
       this.user = user;
     });
 
+    this.$emit('update:favs', favs);
+
     return ret;
   }
 
@@ -97,6 +99,7 @@ export class Auth extends _Vue {
       localStorage.removeItem('id_token');
       localStorage.removeItem('expires_at');
       localStorage.removeItem('user');
+      localStorage.removeItem('profile_token');
       resolve();
     });
   }
@@ -117,8 +120,8 @@ export class Auth extends _Vue {
             scope: 'read:current_user update:current_user_metadata create:current_user_metadata',
           }, (_, result) => {
             this.profileToken = result.accessToken;
-            resolve();
           });
+          resolve();
         } else if (err) {
           this.logout(process.env.BASE_URL || '');
           reject(err);

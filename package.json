@@ -17,6 +17,7 @@
     "vue-color": "^2.7.0",
     "vue-moment": "^4.0.0",
     "vue-property-decorator": "^7.0.0",
+    "vue-router": "^3.0.1",
     "vuetify": "^1.2.9"
   },
   "devDependencies": {

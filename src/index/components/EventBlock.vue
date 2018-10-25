@@ -108,6 +108,7 @@ export default class EventBlock extends Vue {
 .evcol {
   position: relative;
   pointer-events: auto;
+  height: 100%;
 }
 
 .entry {
