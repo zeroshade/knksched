@@ -15,7 +15,7 @@
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-color": "^2.7.0",
-    "vue-moment": "^4.0.0",
+    "vue-moment": "^4.1.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
     "vuetify": "^1.2.9"
